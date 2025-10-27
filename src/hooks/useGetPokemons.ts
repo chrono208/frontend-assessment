@@ -6,10 +6,11 @@ export interface Pokemon {
   name: string;
   types?: string[];
   sprite?: string;
-}
-
-export interface PokemonDetail extends Pokemon {
-  // Details
+  captureRate?: number;
+  height?: number;
+  weight?: number;
+  description?: string;
+  stats?: { name: string; base: number }[];
 }
 
 export const GET_POKEMONS = gql`
@@ -44,7 +45,7 @@ export const GET_POKEMONS = gql`
 `;
 
 export const GET_POKEMON_DETAILS = gql`
-  query GetPokemonDetails($id: String!) {
+  query GetPokemonDetails($id: Int!) {
     pokemon(where: { id: { _eq: $id } }) {
       id
       pokemonspecy {
@@ -92,9 +93,49 @@ export const useGetPokemons = (/* search?: string */): {
       data?.pokemon?.map(
         (p): Pokemon => ({
           id: p.id,
-          name: p.pokemonspecy.pokemonspeciesnames?.[0]?.name,
+          name: p.pokemonspecy?.pokemonspeciesnames?.[0].name,
+          types: p.pokemontypes?.map((t: any) => t.type?.typenames?.[0]?.name),
+          sprite: p.pokemonsprites?.[0]?.sprites ?? undefined,
         }),
       ) ?? [],
+    loading,
+    error,
+  };
+};
+
+export const useGetPokemonDetails = (
+  id?: number,
+): {
+  data: Pokemon | null;
+  loading: boolean;
+  error: any;
+} => {
+  const { data, loading, error } = useQuery<{ pokemon: any[] }>(GET_POKEMON_DETAILS, {
+    variables: { id },
+    skip: !id,
+  });
+
+  const p = data?.pokemon?.[0];
+
+  return {
+    data: p
+      ? {
+          id: p.id,
+          name: p.pokemonspecy?.pokemonspeciesnames?.[0]?.name,
+          sprite: p.pokemonsprites?.[0]?.sprites ?? undefined,
+          types: p.pokemontypes?.map((t: any) => t.type?.typenames?.[0]?.name),
+          captureRate: p.pokemonspecy?.captureRate,
+          height: p.height,
+          weight: p.weight,
+          description:
+            p.pokemonspecy?.pokemonspeciesflavortexts?.[0]?.flavor_text?.replace(/\s+/g, ' ') ??
+            undefined,
+          stats: p.pokemonstats?.map((s: any) => ({
+            name: s.stat?.name,
+            base: s.base_stat,
+          })),
+        }
+      : null,
     loading,
     error,
   };
