@@ -3,6 +3,22 @@ import { tss } from '../tss';
 import { Modal } from 'antd';
 import { useGetPokemons, useGetPokemonDetails } from 'src/hooks/useGetPokemons';
 
+/*
+Hello,
+
+I couldn't figure out how to do the routing for this. I guess i 
+don't have as much experience as you're probably looking for off the bat.
+This was an interesting project for me though and I learned a lot while 
+coding this. I was looking up everything and searching how to do pretty
+much everything. After finishing this project I clearly recognize my skills
+as beginner if successfully completing this is considered mid-level. Thanks
+for reading this and taking the time. The route direction is probably more
+standardized, but popups the way i did them are cooler for this type of 
+thing. :-)
+
+V/r,
+Bryan
+*/
 export const PokemonListPage = () => {
   const { classes } = useStyles();
   const { data } = useGetPokemons();
@@ -101,9 +117,18 @@ export const PokemonListPage = () => {
                 <b>Capture Rate:</b> {detail.captureRate}
               </p>
             )}
-            {detail.description && (
-              <p style={{ marginTop: 12, lineHeight: '22px' }}>{detail.description}</p>
-            )}
+            {detail.stats?.length ? (
+              <div style={{ marginTop: 12, lineHeight: '22px' }}>
+                <b>Stats:</b>
+                <ul style={{ margin: '8px 0 0 16px', padding: 0 }}>
+                  {detail.stats.map((s) => (
+                    <li key={s.name} style={{ listStyle: 'disc' }}>
+                      {s.name}: {s.base}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         )}
       </Modal>

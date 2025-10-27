@@ -9,7 +9,6 @@ export interface Pokemon {
   captureRate?: number;
   height?: number;
   weight?: number;
-  description?: string;
   stats?: { name: string; base: number }[];
 }
 
@@ -124,12 +123,9 @@ export const useGetPokemonDetails = (
           name: p.pokemonspecy?.pokemonspeciesnames?.[0]?.name,
           sprite: p.pokemonsprites?.[0]?.sprites ?? undefined,
           types: p.pokemontypes?.map((t: any) => t.type?.typenames?.[0]?.name),
-          captureRate: p.pokemonspecy?.captureRate,
+          captureRate: p.pokemonspecy?.capture_rate,
           height: p.height,
           weight: p.weight,
-          description:
-            p.pokemonspecy?.pokemonspeciesflavortexts?.[0]?.flavor_text?.replace(/\s+/g, ' ') ??
-            undefined,
           stats: p.pokemonstats?.map((s: any) => ({
             name: s.stat?.name,
             base: s.base_stat,
